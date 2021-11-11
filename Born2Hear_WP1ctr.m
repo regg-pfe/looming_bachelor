@@ -57,11 +57,8 @@ KbName('UnifyKeyNames');
 
 spaceKey = KbName('Space');
 
-closerKey = KbName('LeftArrow'); % LeftArrow 37; up arrow/8 = 104
-fartherKey = KbName('RightArrow'); % RightArrow 39; down arrow/2 = 98
-
-closerKeyL = KbName('c'); 
-fartherKeyL = KbName('y');
+closerKey = KbName('UpArrow');
+fartherKey = KbName('DownArrow');
 
 if flags.do_eeg
     trigVals = struct(...
@@ -191,7 +188,7 @@ instructionA = [...
   'Manchmal scheinen die Geräusche von einer bestimmten Stelle rechts hinter Ihnen im Raum zu kommen, \n',...
   'und manchmal scheint es, als kämen sie aus der Nähe ihres Kopfes oder sogar aus dem Inneren Ihres Kopfes. \n',...
   '\n',...
-  'Ihre Aufgabe während des Experiments (Geräusche von rechts) ist es...\n',...
+  'Ihre Aufgabe während des Experiments ist es...\n',...
   '   den linken Pfeil zu drücken, wenn das ZWEITE Geräusch NÄHER an ihrem Kopf erscheint als das erste \n',...
   '   den rechten Pfeil zu drücken, wenn das ZWEITE Geräusch ENTFERNTER von ihrem Kopf erscheint als das erste \n'];
 
@@ -213,16 +210,7 @@ if flags.do_lateResp
 end
 instructionA= [instructionA,...
    'Nach kurzen Blöcken von je 3 Minuten haben Sie die Möglichkeit eine Pause einzulegen.\n\n'];
-if flags.do_fbblockcatch
-    instructionA=[instructionA,...
-      'Zusätzlich erhalten Sie in jeder Pause Feedback: Prozent korrekter Antworten auf Catch-Trials (= Trials mit gleichbleibender Entfernung).\n',... 
-      '\n'];
-end
-if flags.do_fbblockall
-    instructionA=[instructionA,...
-      'Zusätzlich erhalten Sie in jeder Pause Feedback: Prozent korrekter Antworten.\n',... 
-      '\n'];
-end
+
 if flags.do_beh
     instructionA=[instructionA,...
     'Sollten die Geräusche unangenehm laut sein, geben Sie bitte sofort der Versuchsleitung Bescheid! \n',...
@@ -230,11 +218,7 @@ if flags.do_beh
 end
 instructionA= [instructionA,...
     'Bevor das Experiment beginnt, hören Sie ein paar Tonbeispiele, um die Aufgabe zu üben. \n'];
-if flags.do_fbyes
-    instructionA=[instructionA,...
-    'Hier erhalten Sie unmittelbar Feedback: Der Punkt färbt sich grün (richtige Taste) oder rot (falsche Taste). \n',...
-    '\n'];
-end
+
 instructionA=[instructionA,...
   'Haben Sie noch Fragen? \n',...
   'Zum Starten '];
@@ -255,12 +239,9 @@ if flags.do_laptop
 else
     load(fullfile(savepath,['stimuli_' ID]));
 end
-% load all 451 LAS positions with (:,1)=Azi and (:,2)=Ele
-load('LASpos');
 
 %% Create trial list
-% t1 : 4x native (1 -> reference to row in stim.sig) and 4x inverted (2
-% -> reference to row in stim.sig) 
+% t1 : 4x native (1) and 4x inverted (-1) 
 % t2 : 4x looming (-1) and 4x receding (1)
 % t3 : 2 LASpos (left 37 & right 82) 4 times (once for each direction & each contrast
 % condition -> reference to column in stim.sig
@@ -273,24 +254,27 @@ load('LASpos');
 % t7 : frequency of stim (12 different freqs) -> reference to 3rd dimension
 % in stim.sig
 
-if flags.do_native
-    cc = 1;
-else
-    cc = 2;
-end
-
-t1=repelem([1,2],4)'; 
-t2=repelem([1,-1,1,-1],2)';
+t1=repelem([-1,1],4)'; 
+t2=repelem([-1,1,-1,1],2)';
 t3=repmat([37,82],1,4)';
 t4=repmat([1,-1],1,4)';
 
 % trigger at onset
-if flags.do_native
-    t5=repelem([145,144],4)';
-else
-    t5=repelem([129,128],4)';
+% calculation of a different trigger depending on whether the signal is
+% native/inverted ; looming/receding
+for n = 1:length(t1)
+    if t1(n) == -1 && t2(n) == -1
+        t5(n) = 1;
+    elseif t1(n) == -1 && t2(n) == 1
+        t5(n)= 2;
+    elseif t1(n) == 1 && t2(n) == -1
+        t5(n)= 3;
+    elseif t1(n) == 1 && t2(n) == 1
+        t5(n)= 4;
+    end
 end
 
+% calculation of different trigger for left/right
 for n = 1:length(t4)
     if t4(n) == 1
         t5(n)=t5(n)+8;
@@ -298,12 +282,21 @@ for n = 1:length(t4)
 end
 
 % trigger at change
-if flags.do_native
-    t6=repelem([177,176],4)';
-else
-    t6=repelem([161,160],4)';
+% calculation of a different trigger depending on whether the signal is
+% native/inverted ; looming/receding
+for n = 1:length(t1)
+    if t1(n) == -1 && t2(n) == -1
+        t6(n) = 5;
+    elseif t1(n) == -1 && t2(n) == 1
+        t6(n)= 6;
+    elseif t1(n) == 1 && t2(n) == -1
+        t6(n)= 7;
+    elseif t1(n) == 1 && t2(n) == 1
+        t6(n)= 8;
+    end
 end
 
+% calculation of different trigger for left/right
 for n = 1:length(t4)
     if t4(n) == 1
         t6(n)=t6(n)+8;
@@ -312,19 +305,35 @@ end
 
 % create trial table from vectors t1 to t5 (corresponding to 1 repetition!)
 trialList = [t1,t2,t3,t4,t5,t6];
-trialList = repmat(trialList,kv.Nrep,1); % repeat matrix Nrep times
+% repeat matrix 50 times (such that the list contains 100 trials
+% respectively for inverted & native conditions on the left and the right
+trialList = repmat(trialList,50,1); 
 
 % frequencies
 t7=repelem([1:kv.Fr],ceil(length(trialList)/kv.Fr));
 t7=t7(randperm(length(t7)))';
 trialList(:,7)=t7(1:length(trialList));
 
+% randomize the trialList & then sort trials such that left/right trials
+% are blocked (whether left or right comes first is also randomized) + such
+% that inverted/native trials are blocked (inverted always precedes native to minimize bias)
+
+randomized_dummy = trialList(randperm(size(trialList, 1)), :);
+contrast_sorted = sortrows(randomized_dummy, 1);
+
+lr = randi([1,2]);
+if lr == 1
+    sorted_dummy = sortrows(contrast_sorted, 3, {'ascend'});
+else
+    sorted_dummy = sortrows(contrast_sorted, 3, {'descend'});
+end
+
 % the final trial list is a randomization of the trialList table
-subj.trials = trialList(randperm(size(trialList, 1)), :);
+subj.trials = sorted_dummy;
 
 % Set values
 subj.D = subj.trials(:,1); % 1st column: looming (-1) or receding (1)
-subj.pos = subj.trials(:,3); % write LASpos based on indices!
+subj.pos = subj.trials(:,3); % speaker positions (37 left or 82 right)
 
 %% passive condition
 
@@ -343,106 +352,89 @@ if flags.do_eeg
     sca;
     
     v.play(moviename);
+    
+    % trigger block start
+    IOPort('Write', TB, uint8(trigVals.startBlock), 0);
+    pause(0.01);
+    IOPort('Write', TB, uint8(0), 0);
+    pause(0.01);
 
-    ii = 0; % incremental counter
-    for bb = 1:Nblocks
+    pause(1.5)  % add a pause to ensure the pause is active before the sound 
+        
+        
+    % presentation of stimuli
+    for n = 1:length(subj.trials(:,1))
 
-        % trigger block start
-        IOPort('Write', TB, uint8(trigVals.startBlock), 0);
-        pause(0.01);
-        IOPort('Write', TB, uint8(0), 0);
-        pause(0.01);
+    % if the trial is a looming trial -> then the contrast reference of the first
+    % signal (c1) is 1 or 2 depending on whether it is a
+    % native/inverted condition -> 1/2 references the row of the stim.sig
+    % table, where stim.sig(1,:)=1 stim.sig(2,:)=-1 stim.sig(3,:)=0
+    % vice versa with receding trials
+    %
+    % stim crossover is always c1 -> c2
+    % 1 -> 0 is looming native
+    % 0 -> 1 is receding native
+    % 0 -> -1 is looming inverted
+    % -1 -> 0 is receding inverted
 
-        pause(1.5)  % add a pause to ensure the pause is active before the sound 
-
-        % Positioning
-        if subj.pos(ii+1,1) == 37
-            trigValAziOnset = 127;
-            trigValAziChange = 159;        
-        elseif subj.pos(ii+1,1) == 82
-            trigValAziOnset = 135;
-            trigValAziChange = 167;      
+        if subj.trials(n,1) == -1
+            if subj.trials(n,2) == -1
+                c1 = 3;
+                c2 = 2;
+            else
+                c1 = 2;
+                c2 = 3;
+            end
+        else
+            if subj.trials(n,1) == -1
+                c1 = 1;
+                c2 = 3;
+            else 
+                c1 = 3;
+                c2 = 1;
+            end
         end
 
-      colP = find(kv.azi==subj.pos(ii+1,1)); % to call correct column according to number of positions
-
-      % presentation of one block
-      for iC = 1:kv.NperBlock
-        ii = ii+1;
-        sig1 = subj.stim.sig{subj.trials(ii,1),colP};
-        sig2 = subj.stim.sig{subj.trials(ii,2),colP};
+        pp=subj.trials(n,3); % position of loudspeaker (37 left or 82 right)
+        ff=subj.trials(n,7); % frequenz of stimulus - one of 12 different freqs -> 3rd dimension in stim.sig
 
         % combine stimulus pairs with temporal jitter of crossfade
         dt = kv.jitter*(rand-0.5);
-        subj.tempJpas(ii,1) = dt;
+        subj.tempJ(n,1) = dt;
         % time for onset second stimulus
         onsetChange = kv.dur/2+dt-kv.xFadeDur/2;
-        
-        if subj.trials(ii,4) == 1
-            [sigpair,nM2] = Born2Hear_crossfade(sig1,sig2,...
-            subj.stim.fs,kv.dur,kv.dur/2+dt,kv.xFadeDur,'argimport',flags,kv);
-        else 
-            [sigpair,nM2] = Born2Hear_gapfade(sig1,sig2,...
-            subj.stim.fs,kv.dur,kv.dur/2+dt,kv.GapFadeDur,kv.fadeDur);
-        end
-        
-        % level roving of stimulus pair
-        dSPL = subj.SPL(ii) - kv.SPL;
-        sigpair = 10^(dSPL/20)*sigpair;
+
+        [sigpair,nM2] = Born2Hear_crossfade(stim.sig{c1,pp,ff},stim.sig{c2,pp,ff},...
+        stim.fs,kv.dur,kv.dur/2+dt,kv.xFadeDur,'argimport',flags,kv);
 
         % playback
-        PsychPortAudio('FillBuffer', pahandle, sigpair');
-        if flags.do_passthrough
-            PsychPortAudio('FillBuffer', pahandleT, SoundTrig);
+        if flags.do_eeg % with StimTrak
+            PsychPortAudio('FillBuffer', pahandle, [sigpair stimVec]');
+        else
+            PsychPortAudio('FillBuffer', pahandle, sigpair');
         end
 
         PsychPortAudio('Start', pahandle, 1, 0, 1);
-        if flags.do_passthrough
-            PsychPortAudio('Start', pahandleT, 1, 0, 1);
-        end
-        
 
         % trigger: timestamp for onset/change & exp. condition (1-32)
-        IOPort('Write', TB, uint8(trigValAziOnset+subj.trials(ii,6)), 0);
-        pause(0.01);
-        IOPort('Write', TB, uint8(0), 0);
-        pause(onsetChange-0.01); % wait until start of crossfade
+        if flags.do_eeg 
+            IOPort('Write', TB, uint8(subj.trials(n,5)), 0);
+            pause(0.01);
+            IOPort('Write', TB, uint8(0), 0);
+            pause(onsetChange-0.01); % wait until start of crossfade
 
-        IOPort('Write', TB, uint8(trigValAziChange+subj.trials(ii,6)), 0);
-        pause(0.01);
-        IOPort('Write', TB, uint8(0), 0);
-        pause(0.01); % kv.dur-onsetChange-0.02
-
-        pause(kv.dur-onsetChange-0.02+0.5); % until end of second stimulus + 500 ms ISI
-      end
-
-      if kv.NperBlock > 6
-
-        % trigger for block end
-        if flags.do_eeg
-          IOPort('Write', TB, uint8(trigVals.endBlock), 0);
-          pause(0.01);
-          IOPort('Write', TB, uint8(0), 0);
-          pause(0.01);
+            IOPort('Write', TB, uint8(subj.trials(n,6)), 0);
+            pause(0.01);
+            IOPort('Write', TB, uint8(0), 0);
+            pause(0.01); % kv.dur-onsetChange-0.02
         end
-
-
-        % Display time course and intermediate score
-        infotext = [...
-            'PAUSE',...
-            '\n\n\n',num2str(bb/3) '/3 des Films abgeschlossen.'];
+        
         infotext = [infotext,...
-            '\n\n\n Leertaste Taste drücken um fortzufahren.'];
+           'PAUSE',...
+           '\n\n\n H�lfte des Videos abgeschlossen. Bitte Leertaste Taste drücken um mit dem Video fortzufahren.'];
 
-
-        if mod(bb,3) == 0 % make break after block 3 and after block 6
-            pause(1.2) % wait until stimulus presentation is over
-            % show screen again for break (or don't even show and
-            % experimentator pauses movie)
-%             [win,winRect] = Screen('OpenWindow',kv.screenNumber, black);
-%             ShowCursor;
-%             DrawFormattedText(win,infotext,'center','center',white);
-%             Screen('Flip',win);
+        if n == length(subj.trials(:,1))/2
+            pause(1.2)
             % pause video
             v.pause();
             % Experimenter monitoring info
@@ -456,8 +448,13 @@ if flags.do_eeg
             end
             % resume video
             v.play();
+
+            % start trigger for new block
+            IOPort('Write', TB, uint8(trigVals.startBlock), 0);
+            pause(0.01);
+            IOPort('Write', TB, uint8(0), 0);
+            pause(0.01);
         end
-      end
     end
     
     v.quit();
@@ -477,6 +474,7 @@ if flags.do_eeg
     DrawFormattedText(win,instructionA,.2*x_center,'center',white,120,0,0,1.5);
     Screen('Flip',win);
     pause(2);
+    
 end
 
 %% Test procedure
@@ -508,31 +506,46 @@ Screen('Flip',win);
 pause(1)
 
 % presentation of trials
-for ii = 1:length(subj.trials(:,1))
+for n = 1:length(subj.trials(:,1))
     
     % if the trial is a looming trial -> then the contrast reference of the first
-    % signal (c1) is cc (1 or 2 depending on whether it is a
-    % native/inverted condition) -> 1/2 references the row of the stim.sig
+    % signal (c1) is 1 or 2 depending on whether it is a
+    % native/inverted condition -> 1/2 references the row of the stim.sig
     % table, where stim.sig(1,:)=1 stim.sig(2,:)=-1 stim.sig(3,:)=0
+    % vice versa with receding trials
     %
     % stim crossover is always c1 -> c2
     % 1 -> 0 is looming native
     % 0 -> 1 is receding native
-    % -1 -> 0 is looming inverted
-    % 0 -> -1 is receding inverted
-    if subj.trials(ii,2) == -1
-        c1 = cc;
-        c2 = 3;
+    % 0 -> -1 is looming inverted
+    % -1 -> 0 is receding inverted
+    
+    if subj.trials(n,1) == -1
+        if subj.trials(n,2) == -1
+            c1 = 3;
+            c2 = 2;
+        else
+            c1 = 2;
+            c2 = 3;
+        end
     else
-        c1 = 3;
-        c2 = cc;
+        if subj.trials(n,2) == -1
+            c1 = 1;
+            c2 = 3;
+        else 
+            c1 = 3;
+            c2 = 1;
+        end
     end
-    pp=subj.trials(ii,3); % position of loudspeaker (37 left or 82 right)
-    ff=subj.trials(ii,7); % frequenz of stimulus - one of 12 different freqs -> 3rd dimension in stim.sig
+    
+    pp=subj.trials(n,3); % position of loudspeaker (37 left or 82 right)
+    ff=subj.trials(n,7); % frequenz of stimulus - one of 12 different freqs -> 3rd dimension in stim.sig
 
     % combine stimulus pairs with temporal jitter of crossfade
+    % and save the respective jitter in the trialList to make it accessible
+    % later
     dt = kv.jitter*(rand-0.5);
-    subj.tempJ(ii,1) = dt;
+    subj.tempJ(n,1) = dt;
     % time for onset second stimulus
     onsetChange = kv.dur/2+dt-kv.xFadeDur/2;
 
@@ -560,7 +573,7 @@ for ii = 1:length(subj.trials(:,1))
       ylim([-0.1 0.1])
       title('Right')
       % Display trial values
-      table(subj.trials(ii,1:3),dt)
+      table(subj.trials(n,1:3),dt)
     end
 
     % playback
@@ -574,12 +587,12 @@ for ii = 1:length(subj.trials(:,1))
 
     % trigger: timestamp for onset/change & exp. condition (1-32)
     if flags.do_eeg 
-        IOPort('Write', TB, uint8(subj.trials(ii,5)), 0);
+        IOPort('Write', TB, uint8(subj.trials(n,5)), 0);
         pause(0.01);
         IOPort('Write', TB, uint8(0), 0);
         pause(onsetChange-0.01); % wait until start of crossfade
 
-        IOPort('Write', TB, uint8(subj.trials(ii,6)), 0);
+        IOPort('Write', TB, uint8(subj.trials(n,6)), 0);
         pause(0.01);
         IOPort('Write', TB, uint8(0), 0);
         pause(0.01); % kv.dur-onsetChange-0.02
@@ -609,23 +622,23 @@ for ii = 1:length(subj.trials(:,1))
     end
     respPress=toc;
 
-    subj.RT(ii) = respPress-onsetChange;
+    subj.RT(n) = respPress-onsetChange;
 
     % Externalization response
     if keyCodeVal == closerKey
-      subj.E(ii) = -1;
+      subj.E(n) = -1;
     elseif keyCodeVal == fartherKey
-      subj.E(ii) = 1;
+      subj.E(n) = 1;
     else
-      subj.E(ii) = nan;
+      subj.E(n) = nan;
     end
 
     % Relationship between D and E 
-    subj.hit(ii) = subj.E(ii) == subj.D(ii);
+    subj.hit(n) = subj.E(n) == subj.D(n);
 
     % send trigger for E and hit/miss
     if flags.do_eeg
-        if subj.hit(ii) == 1
+        if subj.hit(n) == 1
             if keyCodeVal == closerKey
                 RespTrig = trigVals.closerHit;
             else
@@ -662,14 +675,14 @@ for ii = 1:length(subj.trials(:,1))
      end
 
     gt = kv.jitter*(rand-0.5);
-    subj.tempJ(ii,2) = gt;
+    subj.tempJ(n,2) = gt;
     pause(0.5 + gt) % -> 0.8 (0.3 from above + 0.5) +/- 50 ms
 
     if flags.do_debugMode
       close(figSgram)
     end
     
-    if mod(ii,91) == 0 % make break
+    if mod(n,91) == 0 % make break
         
         %trigger for block end
         if flags.do_eeg
@@ -680,17 +693,17 @@ for ii = 1:length(subj.trials(:,1))
         end
    
         % Intermediate score
-        subj.pcorrect = 100* nansum(subj.hit(1:ii)) / ii;
+        subj.pcorrect = 100* nansum(subj.hit(1:n)) / n;
         % Save results
         save(savename,'subj')
         
         % Display time course and intermediate score
         infotext = [...
             'PAUSE',...
-            '\n\n\n',num2str(ii/2) ' von ' num2str(length(subj.trials(:,1))/2) ' Blöcken abgeschlossen.'];
+            '\n\n\n',num2str(n/2) ' von ' num2str(length(subj.trials(:,1))/2) ' Blöcken abgeschlossen.'];
         % Inform listener that experiment is completed if all trials are
         % finished
-        if ii == length(subj.trials(:,1))
+        if n == length(subj.trials(:,1))
             infotext = [infotext,...
             '\n\n\n Vielen Dank! Das Experiment ist abgeschlossen.'];
             DrawFormattedText(win,[infotext],'center','center',white);
@@ -717,7 +730,7 @@ for ii = 1:length(subj.trials(:,1))
         end
         
         % if experiment is not completed, start trigger for new block
-        if ii ~= length(subj.trials(:,1))
+        if n ~= length(subj.trials(:,1))
             if flags.do_eeg
                 IOPort('Write', TB, uint8(trigVals.startBlock), 0);
                 pause(0.01);
