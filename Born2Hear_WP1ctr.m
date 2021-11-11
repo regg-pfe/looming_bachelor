@@ -174,65 +174,65 @@ Screen('TextSize',win, 20);
 if flags.do_eeg
     instructionP=[...
        'Herzlich Willkommen zum Experiment!\n\n',...
-       'Sie werden nun für ca. 25 min einen Film mit Untertitel ohne Tonspur sehen. Ihre Aufgabe ist es, sich NUR auf den Film zu konzentrieren, und die Geräusche zu ignorieren. ',...
+       'Sie werden nun fÃ¼r ca. 25 min einen Film mit Untertitel ohne Tonspur sehen. Ihre Aufgabe ist es, sich NUR auf den Film zu konzentrieren, und die GerÃ¤usche zu ignorieren. ',...
        'Am Ende werden Ihnen Fragen zum Film gestellt.\n\n',...
-       'Bitte versuchen Sie, sich während des Films möglichst wenig zu bewegen!\nNach je 8 min pausiert der Film und Sie können eine Pause einlegen.\n\n',...
-       'Sollten die Geräusche unangenehm laut sein, bitte sofort der Versuchsleitung Bescheid geben.\n\n',...
+       'Bitte versuchen Sie, sich wÃ¤hrend des Films mÃ¶glichst wenig zu bewegen!\nNach je 8 min pausiert der Film und Sie kÃ¶nnen eine Pause einlegen.\n\n',...
+       'Sollten die GerÃ¤usche unangenehm laut sein, bitte sofort der Versuchsleitung Bescheid geben.\n\n',...
        'Haben Sie noch Fragen?\n\n',...
-       'Zum Starten die Leertaste drücken.'];
+       'Zum Starten die Leertaste drÃ¼cken.'];
 end
 
 %% Listener instruction active part
 instructionA = [...
-  'In diesem Experiment hören Sie Paare aus zwei Geräuschen. Konzentrieren Sie sich nur auf deren Unterschied bezüglich \n',... 
-  'räumlicher ENTFERNUNG (relativ zur Mitte Ihres Kopfes gesehen). \n',...
-  'Versuchen Sie andere Unterschiede wie räumliche Höhe, Intensität oder Tonhöhe zu ignorieren. \n',...
+  'In diesem Experiment hÃ¶ren Sie Paare aus zwei GerÃ¤uschen. Konzentrieren Sie sich nur auf deren Unterschied bezÃ¼glich \n',... 
+  'rÃ¤umlicher ENTFERNUNG (relativ zur Mitte Ihres Kopfes gesehen). \n',...
+  'Versuchen Sie andere Unterschiede wie rÃ¤umliche HÃ¶he, IntensitÃ¤t oder TonhÃ¶he zu ignorieren. \n',...
   '\n',...
-  'Manchmal scheinen die Geräusche von einer bestimmten Stelle rechts hinter Ihnen im Raum zu kommen, \n',...
-  'und manchmal scheint es, als kämen sie aus der Nähe ihres Kopfes oder sogar aus dem Inneren Ihres Kopfes. \n',...
+  'Manchmal scheinen die GerÃ¤usche von einer bestimmten Stelle rechts hinter Ihnen im Raum zu kommen, \n',...
+  'und manchmal scheint es, als kÃ¤men sie aus der NÃ¤he ihres Kopfes oder sogar aus dem Inneren Ihres Kopfes. \n',...
   '\n',...
-  'Ihre Aufgabe während des Experiments (Geräusche von rechts) ist es...\n',...
-  '   den linken Pfeil zu drücken, wenn das ZWEITE Geräusch NÄHER an ihrem Kopf erscheint als das erste \n',...
-  '   den rechten Pfeil zu drücken, wenn das ZWEITE Geräusch ENTFERNTER von ihrem Kopf erscheint als das erste \n'];
+  'Ihre Aufgabe wÃ¤hrend des Experiments (GerÃ¤usche von rechts) ist es...\n',...
+  '   den linken Pfeil zu drÃ¼cken, wenn das ZWEITE GerÃ¤usch NÃ„HER an ihrem Kopf erscheint als das erste \n',...
+  '   den rechten Pfeil zu drÃ¼cken, wenn das ZWEITE GerÃ¤usch ENTFERNTER von ihrem Kopf erscheint als das erste \n'];
 
 instructionA = [instructionA,...
-  '\nEs gibt auch Blöcke, wo die Geräusche anstatt von schräg rechts, von schräg links kommmen. \n',...
-  'Auch hier ist das zweite Geräusch manchmal näher, weiter entfernt, oder gleich wie das erste. \n',...
+  '\nEs gibt auch BlÃ¶cke, wo die GerÃ¤usche anstatt von schrÃ¤g rechts, von schrÃ¤g links kommmen. \n',...
+  'Auch hier ist das zweite GerÃ¤usch manchmal nÃ¤her, weiter entfernt, oder gleich wie das erste. \n',...
   '\n',...
-  'Ihre Aufgabe während des Experiments (Geräusche von links) ist es...\n',...
-  '   die Taste C zu drücken, wenn das ZWEITE Geräusch NÄHER an ihrem Kopf erscheint als das erste \n',...
-  '   die Taste  Y zu drücken, wenn das ZWEITE Geräusch ENTFERNTER von ihrem Kopf erscheint als das erste \n'];
+  'Ihre Aufgabe wÃ¤hrend des Experiments (GerÃ¤usche von links) ist es...\n',...
+  '   die Taste C zu drÃ¼cken, wenn das ZWEITE GerÃ¤usch NÃ„HER an ihrem Kopf erscheint als das erste \n',...
+  '   die Taste  Y zu drÃ¼cken, wenn das ZWEITE GerÃ¤usch ENTFERNTER von ihrem Kopf erscheint als das erste \n'];
 
 instructionA = [instructionA,...
   '\n',...
-  'Antworten Sie so schnell wie möglich!\n\n',...
-  'Bitte richten Sie Ihren Blick während der Geräuschwiedergabe stets auf den weißen Punkt in der Mitte des Bildschirms. \n'];
+  'Antworten Sie so schnell wie mÃ¶glich!\n\n',...
+  'Bitte richten Sie Ihren Blick wÃ¤hrend der GerÃ¤uschwiedergabe stets auf den weiÃŸen Punkt in der Mitte des Bildschirms. \n'];
 if flags.do_lateResp
     instructionA=[instructionA,...
-  'Antworten Sie erst, nachdem sich der Punkt blau gefärbt hat (nach Ende des zweiten Geräusches).\n'];
+  'Antworten Sie erst, nachdem sich der Punkt blau gefÃ¤rbt hat (nach Ende des zweiten GerÃ¤usches).\n'];
 end
 instructionA= [instructionA,...
-   'Nach kurzen Blöcken von je 3 Minuten haben Sie die Möglichkeit eine Pause einzulegen.\n\n'];
+   'Nach kurzen BlÃ¶cken von je 3 Minuten haben Sie die MÃ¶glichkeit eine Pause einzulegen.\n\n'];
 if flags.do_fbblockcatch
     instructionA=[instructionA,...
-      'Zusätzlich erhalten Sie in jeder Pause Feedback: Prozent korrekter Antworten auf Catch-Trials (= Trials mit gleichbleibender Entfernung).\n',... 
+      'ZusÃ¤tzlich erhalten Sie in jeder Pause Feedback: Prozent korrekter Antworten auf Catch-Trials (= Trials mit gleichbleibender Entfernung).\n',... 
       '\n'];
 end
 if flags.do_fbblockall
     instructionA=[instructionA,...
-      'Zusätzlich erhalten Sie in jeder Pause Feedback: Prozent korrekter Antworten.\n',... 
+      'ZusÃ¤tzlich erhalten Sie in jeder Pause Feedback: Prozent korrekter Antworten.\n',... 
       '\n'];
 end
 if flags.do_beh
     instructionA=[instructionA,...
-    'Sollten die Geräusche unangenehm laut sein, geben Sie bitte sofort der Versuchsleitung Bescheid! \n',...
+    'Sollten die GerÃ¤usche unangenehm laut sein, geben Sie bitte sofort der Versuchsleitung Bescheid! \n',...
     '\n'];
 end
 instructionA= [instructionA,...
-    'Bevor das Experiment beginnt, hören Sie ein paar Tonbeispiele, um die Aufgabe zu üben. \n'];
+    'Bevor das Experiment beginnt, hÃ¶ren Sie ein paar Tonbeispiele, um die Aufgabe zu Ã¼ben. \n'];
 if flags.do_fbyes
     instructionA=[instructionA,...
-    'Hier erhalten Sie unmittelbar Feedback: Der Punkt färbt sich grün (richtige Taste) oder rot (falsche Taste). \n',...
+    'Hier erhalten Sie unmittelbar Feedback: Der Punkt fÃ¤rbt sich grÃ¼n (richtige Taste) oder rot (falsche Taste). \n',...
     '\n'];
 end
 instructionA=[instructionA,...
@@ -240,10 +240,10 @@ instructionA=[instructionA,...
   'Zum Starten '];
 if flags.do_familiarize
     instructionA=[instructionA,...
-    'der Übungsdurchgänge '];
+    'der ÃœbungsdurchgÃ¤nge '];
 end
 instructionA=[instructionA,...
-   'bitte die Leertaste drücken.'];
+   'bitte die Leertaste drÃ¼cken.'];
 
 DrawFormattedText(win,instructionA,.2*x_center,'center',white,120,0,0,1.5);
 Screen('Flip',win);
@@ -280,23 +280,15 @@ else
 end
 
 t1=repelem([1,2],4)'; 
-t2=repelem([1,2,1,2],91)';
-t3=[1:91,1:91,1:91,1:91]';
-
-for xx = 1:91
-    if LASpos(xx,1) < 180
-        t4(xx) = -1;
-    else
-        t4(xx) = 1;
-    end
-end
-t4=repmat(t4,1,4)';
+t2=repelem([1,-1,1,-1],2)';
+t3=repmat([37,82],1,4)';
+t4=repmat([1,-1],1,4)';
 
 % trigger at onset
 if flags.do_native
-    t5=repelem([145,144],182)';
+    t5=repelem([145,144],4)';
 else
-    t5=repelem([129,128],182)';
+    t5=repelem([129,128],4)';
 end
 
 for n = 1:length(t4)
@@ -307,9 +299,9 @@ end
 
 % trigger at change
 if flags.do_native
-    t6=repelem([177,176],182)';
+    t6=repelem([177,176],4)';
 else
-    t6=repelem([161,160],182)';
+    t6=repelem([161,160],4)';
 end
 
 for n = 1:length(t4)
@@ -332,7 +324,7 @@ subj.trials = trialList(randperm(size(trialList, 1)), :);
 
 % Set values
 subj.D = subj.trials(:,1); % 1st column: looming (-1) or receding (1)
-subj.pos = subj.trials(:,2); % write LASpos based on indices!
+subj.pos = subj.trials(:,3); % write LASpos based on indices!
 
 %% passive condition
 
@@ -364,10 +356,10 @@ if flags.do_eeg
         pause(1.5)  % add a pause to ensure the pause is active before the sound 
 
         % Positioning
-        if subj.pos(ii+1,1) < 180
+        if subj.pos(ii+1,1) == 37
             trigValAziOnset = 127;
             trigValAziChange = 159;        
-        elseif subj.pos(ii+1,1) > 180
+        elseif subj.pos(ii+1,1) == 82
             trigValAziOnset = 135;
             trigValAziChange = 167;      
         end
@@ -440,7 +432,7 @@ if flags.do_eeg
             'PAUSE',...
             '\n\n\n',num2str(bb/3) '/3 des Films abgeschlossen.'];
         infotext = [infotext,...
-            '\n\n\n Leertaste Taste drücken um fortzufahren.'];
+            '\n\n\n Leertaste Taste drÃ¼cken um fortzufahren.'];
 
 
         if mod(bb,3) == 0 % make break after block 3 and after block 6
@@ -487,174 +479,6 @@ if flags.do_eeg
     pause(2);
 end
 
-%% Listener familiarization & SPL check
-if flags.do_familiarize
-    
-    % wait for space key
-    keyCode(spaceKey) = 0;
-    while keyCode(spaceKey) == 0
-        [secs, keyCode] = KbWait;
-    end
-    pause(1);
-    HideCursor;
-    
-    for pp = 1:size(subj.stim.sig,2) % number of cols = positions
-        
-        uu = unique(subj.pos(:,1),'stable');
-            
-        if uu(pp) < 180
-              aziLabel = 'links';
-              fingerLabel = 'linken';
-              closerL = 'C';
-              fartherL = 'Y';
-              staticL = 'X';    
-              closerKey = KbName('c'); 
-              fartherKey = KbName('y');
-              staticKey = KbName('x');      
-         elseif uu(pp) > 180
-              aziLabel = 'rechts';
-              fingerLabel = 'rechten';
-              closerL = 'Pfeil LINKS';
-              fartherL = 'Pfeil RECHTS';
-              staticL = 'Pfeil UNTEN';
-              closerKey = KbName('LeftArrow'); 
-              fartherKey = KbName('RightArrow'); 
-              staticKey = KbName('DownArrow');      
-        end
-    
-        if Npos > 1 % display position
-            DrawFormattedText(win,['Geräusche von ' aziLabel ,...
-                ':\n\n\n Bitte Antworttasten \n\n' fartherL ' für entfernter\n    ',...
-                staticL ' für gleich\n' closerL ' für näher\n\n mit dem ' fingerLabel ' Zeigefinger drücken! ',...
-                '\n\n\n Weiter mit der Leertaste.'],'center','center',white);
-            Screen('Flip',win);
-            keyCode(spaceKey) = 0;
-            while keyCode(spaceKey) == 0
-                [secs, keyCode] = KbWait;
-            end
-        end
-
-        % Fixation point
-        Screen('DrawDots',win, [x_center,y_center], 14, white, [], 2);
-        Screen('Flip',win);
-        pause(1)
-        
-        if pp == 1
-            ff = [];
-        end
-
-      for ii = 1:length(a) 
-        i1 = a(ii,1);
-        i2 = a(ii,2);
-        if flags.do_static
-            sigpair = Born2Hear_crossfade(subj.stim.sig{i1,pp},subj.stim.sig{i2,pp},...      
-            subj.stim.fs,kv.dur,kv.dur/2,kv.xFadeDur,'argimport',flags,kv);
-        else
-            if a(ii,4) == 1
-                sigpair = Born2Hear_crossfade(subj.stim.sig{i1,pp},subj.stim.sig{i2,pp},...      
-                subj.stim.fs,kv.dur,kv.dur/2,kv.xFadeDur,'argimport',flags,kv);
-            else
-                sigpair = Born2Hear_gapfade(subj.stim.sig{i1,pp},subj.stim.sig{i2,pp},...     
-                subj.stim.fs,kv.dur,kv.dur/2,kv.GapFadeDur,kv.fadeDur);
-            end
-        end
-        sigpair = 10^(kv.SPLrove/2/20)*sigpair; % present max level
-        
-        PsychPortAudio('FillBuffer', pahandle, sigpair');
-        PsychPortAudio('Start', pahandle, 1, 0, 1);    
-
-        if flags.do_lateResp
-            pause(kv.dur)
-            Screen('DrawDots',win, [x_center,y_center], 14, blue, [], 2);
-            Screen('Flip',win);
-        else
-            % response allowed after crossfade-startpoint
-            pause(kv.dur/2-kv.xFadeDur/2)
-        end
-        
-        % response via keyboard 
-        keyCodeVal = 0;
-        if flags.do_static
-            while not(keyCodeVal==closerKey || keyCodeVal==fartherKey || keyCodeVal==staticKey) % 67...C, 70...F
-            [tmp,keyCode] = KbWait([],2);
-            keyCodeVal = find(keyCode,1);
-            end
-        else
-            while not(keyCodeVal==closerKey || keyCodeVal==fartherKey) % 67...C, 70...F
-            [tmp,keyCode] = KbWait([],2);
-            keyCodeVal = find(keyCode,1);
-            end
-        end
-        
-        if keyCodeVal == closerKey
-            E = -1;
-        elseif keyCodeVal == fartherKey
-            E = 1;
-        else
-            E = 0;
-        end
-
-        hit = E == a(ii,3);
-        
-        if flags.do_fbblockcatch
-            if a(ii,3) == 0
-                if E == 0
-                    ff = [ff,1];
-                else
-                    ff = [ff,0];
-                end
-            end
-        elseif flags.do_fbblockall
-            if hit 
-                ff = [ff,1];
-            else
-                ff = [ff,0];
-            end
-        end
-        
-        % feedback (TbT; only during practice)
-        if flags.do_fbyes
-           if hit
-             Screen('DrawDots',win, [x_center,y_center], 14, green, [], 2);
-           else
-             Screen('DrawDots',win, [x_center,y_center], 14, red, [], 2);
-           end
-           Screen('Flip',win);
-           pause(0.4)
-           Screen('DrawDots',win, [x_center,y_center], 14, white, [], 2);
-           Screen('Flip',win);
-        else
-           if flags.do_lateResp
-              Screen('DrawDots',win, [x_center,y_center], 14, white, [], 2);
-              Screen('Flip',win);
-              pause(0.4)
-           else
-              Screen('FillRect',win,black);
-              Screen('Flip',win);
-              pause(0.4)
-              Screen('DrawDots',win, [x_center,y_center], 14, white, [], 2);
-              Screen('Flip',win);
-           end
-        end       
-        pause(1)
-      end
-    end
-    
-    instruction2 = [...
-      'Ende der Übungsdruchgänge.\n',...
-      '\n',num2str(mean(ff)*100,'%3.2f'),'% richtige Antworten.\n\n',...
-      'Haben Sie noch Fragen?\n',...
-      'Wenn nicht, drücken Sie die Leertaste um das Experiment zu starten.\n'];
-    DrawFormattedText(win,instruction2,'center','center',white,120,0,0,1.5);
-    Screen('Flip',win);
-    
-    
-     % Experimenter monitoring info
-    disp('Info given to listener:')
-    disp(instruction2)
-
-end
-
 %% Test procedure
 pause(1)
 % wait for space key
@@ -664,96 +488,56 @@ while keyCode(spaceKey) == 0
 end
 
 % initialize response variables
-subj.E = nan(Ntotal,1); % relative externalization response: closer (-1), farther (1)
-subj.RT = nan(Ntotal,1); % reaction time
-subj.hit = nan(Ntotal,1); % hits
+subj.E = nan(length(subj.trials(:,1)),1); % relative externalization response: closer (-1), farther (1)
+subj.RT = nan(length(subj.trials(:,1)),1); % reaction time
+subj.hit = nan(length(subj.trials(:,1)),1); % hits
+
+if flags.do_eeg
+    IOPort('Write', TB, uint8(trigVals.startBlock), 0);
+    pause(0.01);
+    IOPort('Write', TB, uint8(0), 0);
+    pause(0.01);
+end
+
+pause(1.5)  % add a pause to ensure the pause is active before the sound 
 
 
-ii = 0; % incremental counter
-for bb = 1:Nblocks
-  
-    if flags.do_eeg
-        IOPort('Write', TB, uint8(trigVals.startBlock), 0);
-        pause(0.01);
-        IOPort('Write', TB, uint8(0), 0);
-        pause(0.01);
-    end
+% Fixation point
+Screen('DrawDots',win, [x_center,y_center], 14, white, [], 2);
+Screen('Flip',win);
+pause(1)
 
-    pause(1.5)  % add a pause to ensure the pause is active before the sound 
+% presentation of trials
+for ii = 1:length(subj.trials(:,1))
     
-    % Positioning
-    if subj.pos(ii+1,1) < 180
-      aziLabel = 'links';
-      fingerLabel = 'linken';
-      closerL = 'C';
-      fartherL = 'Y';
-      staticL = 'X';    
-      closerKey = KbName('c'); 
-      fartherKey = KbName('y');
-      staticKey = KbName('x');  
-      trigValAziOnset = 143;
-      trigValAziChange = 175;      
-    elseif subj.pos(ii+1,1) > 180
-      aziLabel = 'rechts';
-      fingerLabel = 'rechten';
-      closerL = 'Pfeil LINKS';
-      fartherL = 'Pfeil RECHTS';
-      staticL = 'Pfeil UNTEN';
-      closerKey = KbName('LeftArrow'); 
-      fartherKey = KbName('RightArrow'); 
-      staticKey = KbName('DownArrow');
-      trigValAziOnset = 151;
-      trigValAziChange = 183;      
+    % if the trial is a looming trial -> then the contrast reference of the first
+    % signal (c1) is cc (1 or 2 depending on whether it is a
+    % native/inverted condition) -> 1/2 references the row of the stim.sig
+    % table, where stim.sig(1,:)=1 stim.sig(2,:)=-1 stim.sig(3,:)=0
+    %
+    % stim crossover is always c1 -> c2
+    % 1 -> 0 is looming native
+    % 0 -> 1 is receding native
+    % -1 -> 0 is looming inverted
+    % 0 -> -1 is receding inverted
+    if subj.trials(ii,2) == -1
+        c1 = cc;
+        c2 = 3;
+    else
+        c1 = 3;
+        c2 = cc;
     end
-    
-    if Npos > 1 % display position
-        DrawFormattedText(win,['Geräusche von ' aziLabel ,...
-            ':\n\n\n Bitte Antworttasten \n\n' fartherL ' für entfernter\n    ',...
-            staticL ' für gleich\n' closerL ' für näher\n\n mit dem ' fingerLabel ' Zeigefinger drücken! ',...
-            '\n\n\n Weiter mit der Leertaste.'],'center','center',white);
-        Screen('Flip',win);
-        keyCode(spaceKey) = 0;
-        while keyCode(spaceKey) == 0
-            [secs, keyCode] = KbWait;
-        end
-    end
-  
-  colP = find(kv.azi==subj.pos(ii+1,1)); % to call correct column according to number of positions
-
-  % Fixation point
-  Screen('DrawDots',win, [x_center,y_center], 14, white, [], 2);
-  Screen('Flip',win);
-  pause(1)
-
-  % presentation of one block
-  for iC = 1:kv.NperBlock
-    ii = ii+1;
-    sig1 = subj.stim.sig{subj.trials(ii,1),colP};
-    sig2 = subj.stim.sig{subj.trials(ii,2),colP};
-
+    pp=subj.trials(ii,3); % position of loudspeaker (37 left or 82 right)
+    ff=subj.trials(ii,7); % frequenz of stimulus - one of 12 different freqs -> 3rd dimension in stim.sig
 
     % combine stimulus pairs with temporal jitter of crossfade
     dt = kv.jitter*(rand-0.5);
     subj.tempJ(ii,1) = dt;
     % time for onset second stimulus
     onsetChange = kv.dur/2+dt-kv.xFadeDur/2;
-    
-    if flags.do_static
-        [sigpair,nM2] = Born2Hear_crossfade(sig1,sig2,...
-        subj.stim.fs,kv.dur,kv.dur/2+dt,kv.xFadeDur,'argimport',flags,kv);
-    else
-        if subj.trials(ii,4) == 1
-            [sigpair,nM2] = Born2Hear_crossfade(sig1,sig2,...
-            subj.stim.fs,kv.dur,kv.dur/2+dt,kv.xFadeDur,'argimport',flags,kv);
-        else 
-            [sigpair,nM2] = Born2Hear_gapfade(sig1,sig2,...
-            subj.stim.fs,kv.dur,kv.dur/2+dt,kv.GapFadeDur,kv.fadeDur);
-        end
-    end
 
-    % level roving of stimulus pair
-    dSPL = subj.SPL(ii) - kv.SPL;
-    sigpair = 10^(dSPL/20)*sigpair;
+    [sigpair,nM2] = Born2Hear_crossfade(stim.sig{c1,pp,ff},stim.sig{c2,pp,ff},...
+    stim.fs,kv.dur,kv.dur/2+dt,kv.xFadeDur,'argimport',flags,kv);
 
     % Plot spectral maps to check stimuli
     if flags.do_debugMode
@@ -776,28 +560,26 @@ for bb = 1:Nblocks
       ylim([-0.1 0.1])
       title('Right')
       % Display trial values
-      table(subj.trials(ii,3:6),dt)
+      table(subj.trials(ii,1:3),dt)
     end
-    
+
     % playback
-    PsychPortAudio('FillBuffer', pahandle, sigpair');
-    if flags.do_passthrough
-        PsychPortAudio('FillBuffer', pahandleT, SoundTrig);
+    if flags.do_eeg % with StimTrak
+        PsychPortAudio('FillBuffer', pahandle, [sigpair stimVec]');
+    else
+        PsychPortAudio('FillBuffer', pahandle, sigpair');
     end
     tic;
     PsychPortAudio('Start', pahandle, 1, 0, 1);
-    if flags.do_passthrough
-        PsychPortAudio('Start', pahandleT, 1, 0, 1);
-    end
 
     % trigger: timestamp for onset/change & exp. condition (1-32)
     if flags.do_eeg 
-        IOPort('Write', TB, uint8(trigValAziOnset+subj.trials(ii,6)), 0);
+        IOPort('Write', TB, uint8(subj.trials(ii,5)), 0);
         pause(0.01);
         IOPort('Write', TB, uint8(0), 0);
         pause(onsetChange-0.01); % wait until start of crossfade
 
-        IOPort('Write', TB, uint8(trigValAziChange+subj.trials(ii,6)), 0);
+        IOPort('Write', TB, uint8(subj.trials(ii,6)), 0);
         pause(0.01);
         IOPort('Write', TB, uint8(0), 0);
         pause(0.01); % kv.dur-onsetChange-0.02
@@ -820,64 +602,40 @@ for bb = 1:Nblocks
 
     % Get response via keyboard 
     keyCodeVal = 0;
-    if flags.do_static
-        while not(any(keyCodeVal==[closerKey,fartherKey,staticKey]))
-        [tmp,keyCode] = KbWait([],2);
-        keyCodeVal = find(keyCode,1);
-        end
-        respPress=toc;
-    else
-        while not(any(keyCodeVal==[closerKey,fartherKey]))
-        [tmp,keyCode] = KbWait([],2);
-        keyCodeVal = find(keyCode,1);
-        end
-        respPress=toc;
+    
+    while not(any(keyCodeVal==[closerKey,fartherKey]))
+    [tmp,keyCode] = KbWait([],2);
+    keyCodeVal = find(keyCode,1);
     end
-    
+    respPress=toc;
+
     subj.RT(ii) = respPress-onsetChange;
-    
+
     % Externalization response
     if keyCodeVal == closerKey
       subj.E(ii) = -1;
     elseif keyCodeVal == fartherKey
       subj.E(ii) = 1;
-    elseif keyCodeVal == staticKey
-      subj.E(ii) = 0;
     else
       subj.E(ii) = nan;
     end
 
     % Relationship between D and E 
     subj.hit(ii) = subj.E(ii) == subj.D(ii);
-    
-    % static percent correct
-    if subj.D(ii) == 0
-        if subj.E(ii) == 0
-            subj.staticHit(ii) = 1;
-        else
-            subj.staticHit(ii) = 0;
-        end
-    else
-        subj.staticHit(ii) = nan;
-    end
-    
+
     % send trigger for E and hit/miss
     if flags.do_eeg
         if subj.hit(ii) == 1
             if keyCodeVal == closerKey
                 RespTrig = trigVals.closerHit;
-            elseif keyCodeVal == fartherKey
-                RespTrig = trigVals.fartherHit;
             else
-                RespTrig = trigVals.staticHit;
+                RespTrig = trigVals.fartherHit;
             end
         else
              if keyCodeVal == closerKey
                 RespTrig = trigVals.closerMiss;
-            elseif keyCodeVal == fartherKey
+             else 
                 RespTrig = trigVals.fartherMiss;
-            else
-                RespTrig = trigVals.staticMiss;
             end       
         end
         IOPort('Write', TB, uint8(RespTrig), 0);
@@ -885,7 +643,7 @@ for bb = 1:Nblocks
         IOPort('Write', TB, uint8(0), 0);
         pause(0.01);
     end
-    
+
 
      if flags.do_lateResp
          Screen('DrawDots',win, [x_center,y_center], 14, white, [], 2);
@@ -902,85 +660,85 @@ for bb = 1:Nblocks
          Screen('DrawDots',win, [x_center,y_center], 14, white, [], 2);
          Screen('Flip',win);         
      end
-    
+
     gt = kv.jitter*(rand-0.5);
     subj.tempJ(ii,2) = gt;
     pause(0.5 + gt) % -> 0.8 (0.3 from above + 0.5) +/- 50 ms
- 
 
     if flags.do_debugMode
       close(figSgram)
     end
-  end
-  
-  % Intermediate score
-  subj.pcorrect = 100* nansum(subj.hit(1:ii)) / ii;
-  subj.staticCorrect = 100*mean(subj.staticHit(1:ii),'omitnan');
-
-  if kv.NperBlock > 6
-    % Save results
-    save(savename,'subj')
-
-    %trigger for block end
-    if flags.do_eeg
-      IOPort('Write', TB, uint8(trigVals.endBlock), 0);
-      pause(0.01);
-      IOPort('Write', TB, uint8(0), 0);
-      pause(0.01);
-    end
-
-    % Display time course and intermediate score
-    infotext = [...
-        'PAUSE',...
-        '\n\n\n',num2str(bb) ' von ' num2str(Nblocks) ' Blöcken abgeschlossen.'];
-    if flags.do_fbblockcatch
-        infotext = [infotext,...
-        '\n\n\n',num2str(subj.staticCorrect,'%3.2f'),'% richtige Antworten.'];
-    elseif flags.do_fbblockall
-        infotext = [infotext,...
-        '\n\n\n',num2str(subj.pcorrect,'%3.2f'),'% richtige Antworten.'];
-    end
-    infotext = [infotext,...
-        '\n\n\n Leertaste Taste drücken um mit dem Experiment fortzufahren.'];
     
-    
-    if bb < Nblocks
-        DrawFormattedText(win,infotext,'center','center',white);
-        Screen('Flip',win);
-        % Experimenter monitoring info
+    if mod(ii,91) == 0 % make break
+        
+        %trigger for block end
+        if flags.do_eeg
+          IOPort('Write', TB, uint8(trigVals.endBlock), 0);
+          pause(0.01);
+          IOPort('Write', TB, uint8(0), 0);
+          pause(0.01);
+        end
+   
+        % Intermediate score
+        subj.pcorrect = 100* nansum(subj.hit(1:ii)) / ii;
+        % Save results
+        save(savename,'subj')
+        
+        % Display time course and intermediate score
+        infotext = [...
+            'PAUSE',...
+            '\n\n\n',num2str(ii/2) ' von ' num2str(length(subj.trials(:,1))/2) ' BlÃ¶cken abgeschlossen.'];
+        % Inform listener that experiment is completed if all trials are
+        % finished
+        if ii == length(subj.trials(:,1))
+            infotext = [infotext,...
+            '\n\n\n Vielen Dank! Das Experiment ist abgeschlossen.'];
+            DrawFormattedText(win,[infotext],'center','center',white);
+            Screen('Flip',win);
+            WaitSecs(5);
+            Screen('CloseAll');  
+        % else continuation with experiment
+        else
+            infotext = [infotext,...
+            '\n\n\n Leertaste Taste drÃ¼cken um mit dem Experiment fortzufahren.'];
+            DrawFormattedText(win,infotext,'center','center',white);
+            Screen('Flip',win);
+        end
+        
+        % Experimenter monitoring info (incl % correct)
         disp('Info given to listener:')
         disp(infotext)
-        disp('Experimenter-only info:')
-        disp(['Percent correct (all trials): ',num2str(subj.pcorrect),'%'])
+        disp(num2str(subj.pcorrect,'%3.2f'),'% richtige Antworten.')
         % force break
         % pause(10)
         keyCode(spaceKey) = 0;
         while keyCode(spaceKey) == 0
-            [secs, keyCode] = KbWait;
+            [~, keyCode] = KbWait;
         end
+        
+        % if experiment is not completed, start trigger for new block
+        if ii ~= length(subj.trials(:,1))
+            if flags.do_eeg
+                IOPort('Write', TB, uint8(trigVals.startBlock), 0);
+                pause(0.01);
+                IOPort('Write', TB, uint8(0), 0);
+                pause(0.01);
+            end
+            % Fixation point
+            Screen('DrawDots',win, [x_center,y_center], 14, white, [], 2);
+            Screen('Flip',win);
+            pause(1)
+        end    
     end
-  end  
 end
+
 
 % Save results
 save(savename,'subj')
 
-% close PsychAudioPort and virtual serial port
+% close PsychAudioPort and virtual  serial port
 PsychPortAudio('Close', pahandle);
-if flags.do_passthrough
-    PsychPortAudio('Close', pahandleT);
-end
 
 if flags.do_eeg
     IOPort('Close', TB);
-end
-
-%% Inform listener that experiment is completed
-i1 = 'Vielen Dank! Das Experiment ist abgeschlossen.';
-
-DrawFormattedText(win,[i1],'center','center',white);
-Screen('Flip',win);
-WaitSecs(3);
-Screen('CloseAll');
-
 end
