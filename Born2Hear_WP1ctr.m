@@ -2,10 +2,16 @@ function Born2Hear_WP1ctr(ID,varargin)
 %% runs Born2Hear experiment
 %
 % variables
-% Direction (D): looming (-1) or receding (1) or static (0); col 3
-% Continuity (cont): continuous (1) or gap (-1); col 4 OR change (0) vs. static (-1 for near, 1 for far) for design = 'static'
-% Type of spectral profile: native (1) or inverted (-1); col 5 + add.
-% 
+% spectral profile: native(1) or inverted (-1); col 1
+% Direction (D): looming (-1) or receding (1); col 2
+%
+% speaker position: 37 left or 82 right; col 3
+% lateralization of stimulus: left (1) or right (-1); col 4
+% trigger value onset passive; col 5
+% trigger value change passive; col 6
+% trigger value onset active; col 7
+% trigger value change active; col 8
+%frequency of stimulus (1:12); col 9
 %
 % E (externalized response): closer (-1) or farther (1)
 % hit: correct response (1) or wrong response (0)
@@ -84,16 +90,6 @@ if flags.do_eeg
     stimVec=[stimVec zeros(siglen,1)]; %StimTrak: send stimVec as third channel
 end
 
-%         Block	trigOnset	trigChange
-%         plc	127 + cell	159 + cell
-%         pli	127 + cell	159 + cell
-%         prc	135 + cell	167 + cell
-%         pri	135 + cell	167 + cell
-%         alc	143 + cell	175 + cell
-%         ali	143 + cell	175 + cell
-%         arc	151 + cell	183 + cell
-%         ari	151 + cell	183 + cell
-
 %% Check availability of dependent functions
 if not(exist('Born2Hear_stim','file'))
   addpath(fullfile('..','MATLAB_general'))
@@ -171,7 +167,7 @@ Screen('TextSize',win, 20);
 if flags.do_eeg
     instructionP=[...
        'Herzlich Willkommen zum Experiment!\n\n',...
-       'Sie werden nun für ca. 25 min einen Film mit Untertitel ohne Tonspur sehen. Ihre Aufgabe ist es, sich NUR auf den Film zu konzentrieren, und die Geräusche zu ignorieren. ',...
+       'Sie werden nun für ca. 15 min einen Film mit Untertitel ohne Tonspur sehen. Ihre Aufgabe ist es, sich NUR auf den Film zu konzentrieren, und die Geräusche zu ignorieren. ',...
        'Am Ende werden Ihnen Fragen zum Film gestellt.\n\n',...
        'Bitte versuchen Sie, sich während des Films möglichst wenig zu bewegen!\nNach je 8 min pausiert der Film und Sie können eine Pause einlegen.\n\n',...
        'Sollten die Geräusche unangenehm laut sein, bitte sofort der Versuchsleitung Bescheid geben.\n\n',...
@@ -185,20 +181,9 @@ instructionA = [...
   'räumlicher ENTFERNUNG (relativ zur Mitte Ihres Kopfes gesehen). \n',...
   'Versuchen Sie andere Unterschiede wie räumliche Höhe, Intensität oder Tonhöhe zu ignorieren. \n',...
   '\n',...
-  'Manchmal scheinen die Geräusche von einer bestimmten Stelle rechts hinter Ihnen im Raum zu kommen, \n',...
-  'und manchmal scheint es, als kämen sie aus der Nähe ihres Kopfes oder sogar aus dem Inneren Ihres Kopfes. \n',...
-  '\n',...
   'Ihre Aufgabe während des Experiments ist es...\n',...
-  '   den linken Pfeil zu drücken, wenn das ZWEITE Geräusch NÄHER an ihrem Kopf erscheint als das erste \n',...
-  '   den rechten Pfeil zu drücken, wenn das ZWEITE Geräusch ENTFERNTER von ihrem Kopf erscheint als das erste \n'];
-
-instructionA = [instructionA,...
-  '\nEs gibt auch Blöcke, wo die Geräusche anstatt von schräg rechts, von schräg links kommmen. \n',...
-  'Auch hier ist das zweite Geräusch manchmal näher, weiter entfernt, oder gleich wie das erste. \n',...
-  '\n',...
-  'Ihre Aufgabe während des Experiments (Geräusche von links) ist es...\n',...
-  '   die Taste C zu drücken, wenn das ZWEITE Geräusch NÄHER an ihrem Kopf erscheint als das erste \n',...
-  '   die Taste  Y zu drücken, wenn das ZWEITE Geräusch ENTFERNTER von ihrem Kopf erscheint als das erste \n'];
+  '   den unteren Pfeil zu drücken, wenn das ZWEITE Geräusch NÄHER an ihrem Kopf erscheint als das erste \n',...
+  '   den oberen Pfeil zu drücken, wenn das ZWEITE Geräusch ENTFERNTER von ihrem Kopf erscheint als das erste \n'];
 
 instructionA = [instructionA,...
   '\n',...
@@ -249,9 +234,11 @@ end
 % that each stimulus is played once from every position 
 
 % t4 : lateralization of each speaker position (left 1, right -1)
-% t5 : 
-% t6 :
-% t7 : frequency of stim (12 different freqs) -> reference to 3rd dimension
+% t5 : trigger at onset passive
+% t6 : trigger at change passive
+% t7 : trigger at onset active
+% t8 : tigger at change active
+% t9 : frequency of stim (12 different freqs) -> reference to 3rd dimension
 % in stim.sig
 
 t1=repelem([-1,1],4)'; 
@@ -259,60 +246,56 @@ t2=repelem([-1,1,-1,1],2)';
 t3=repmat([37,82],1,4)';
 t4=repmat([1,-1],1,4)';
 
-% trigger at onset
+% trigger for passive onset t5/change t6 and active onset t7/ change t8
 % calculation of a different trigger depending on whether the signal is
 % native/inverted ; looming/receding
+% trigger for LEFT!
 for n = 1:length(t1)
     if t1(n) == -1 && t2(n) == -1
-        t5(n) = 1;
+        t5(n) = 132;
+        t6(n) = 164;
+        t7(n) = 148;
+        t8(n) = 189;
     elseif t1(n) == -1 && t2(n) == 1
-        t5(n)= 2;
+        t5(n)= 133;
+        t6(n) = 165;
+        t7(n) = 149;
+        t8(n) = 181;
     elseif t1(n) == 1 && t2(n) == -1
-        t5(n)= 3;
+        t5(n)= 129;
+        t6(n) = 161;
+        t7(n) = 145;
+        t8(n) = 177;
     elseif t1(n) == 1 && t2(n) == 1
-        t5(n)= 4;
+        t5(n)= 128;
+        t6(n) = 160;
+        t7(n) = 144;
+        t8(n) = 176;
     end
 end
 
 % calculation of different trigger for left/right
+% for stimulus right: add 8
 for n = 1:length(t4)
-    if t4(n) == 1
+    if t4(n) == -1
         t5(n)=t5(n)+8;
-    end
-end
-
-% trigger at change
-% calculation of a different trigger depending on whether the signal is
-% native/inverted ; looming/receding
-for n = 1:length(t1)
-    if t1(n) == -1 && t2(n) == -1
-        t6(n) = 5;
-    elseif t1(n) == -1 && t2(n) == 1
-        t6(n)= 6;
-    elseif t1(n) == 1 && t2(n) == -1
-        t6(n)= 7;
-    elseif t1(n) == 1 && t2(n) == 1
-        t6(n)= 8;
-    end
-end
-
-% calculation of different trigger for left/right
-for n = 1:length(t4)
-    if t4(n) == 1
         t6(n)=t6(n)+8;
+        t7(n)=t7(n)+8;
+        t8(n)=t8(n)+8;
     end
 end
+
 
 % create trial table from vectors t1 to t5 (corresponding to 1 repetition!)
-trialList = [t1,t2,t3,t4,t5,t6];
+trialList = [t1,t2,t3,t4,t5',t6',t7',t8'];
 % repeat matrix 50 times (such that the list contains 100 trials
 % respectively for inverted & native conditions on the left and the right
 trialList = repmat(trialList,50,1); 
 
 % frequencies
-t7=repelem([1:kv.Fr],ceil(length(trialList)/kv.Fr));
-t7=t7(randperm(length(t7)))';
-trialList(:,7)=t7(1:length(trialList));
+t9=repelem([1:kv.Fr],ceil(length(trialList)/kv.Fr));
+t9=t9(randperm(length(t9)))';
+trialList(:,9)=t9(1:length(trialList));
 
 % randomize the trialList & then sort trials such that left/right trials
 % are blocked (whether left or right comes first is also randomized) + such
@@ -396,7 +379,7 @@ if flags.do_eeg
         end
 
         pp=subj.trials(n,3); % position of loudspeaker (37 left or 82 right)
-        ff=subj.trials(n,7); % frequenz of stimulus - one of 12 different freqs -> 3rd dimension in stim.sig
+        ff=subj.trials(n,9); % frequenz of stimulus - one of 12 different freqs -> 3rd dimension in stim.sig
 
         % combine stimulus pairs with temporal jitter of crossfade
         dt = kv.jitter*(rand-0.5);
@@ -429,14 +412,16 @@ if flags.do_eeg
             pause(0.01); % kv.dur-onsetChange-0.02
         end
         
-        infotext = [infotext,...
-           'PAUSE',...
-           '\n\n\n H�lfte des Videos abgeschlossen. Bitte Leertaste Taste drücken um mit dem Video fortzufahren.'];
-
+        
         if n == length(subj.trials(:,1))/2
             pause(1.2)
             % pause video
             v.pause();
+            
+            infotext = [infotext,...
+           'PAUSE',...
+           '\n\n\n H�lfte des Videos abgeschlossen. Bitte Leertaste Taste drücken um mit dem Video fortzufahren.'];
+
             % Experimenter monitoring info
             disp('Info given to listener:')
             disp(infotext)
@@ -539,7 +524,7 @@ for n = 1:length(subj.trials(:,1))
     end
     
     pp=subj.trials(n,3); % position of loudspeaker (37 left or 82 right)
-    ff=subj.trials(n,7); % frequenz of stimulus - one of 12 different freqs -> 3rd dimension in stim.sig
+    ff=subj.trials(n,9); % frequenz of stimulus - one of 12 different freqs -> 3rd dimension in stim.sig
 
     % combine stimulus pairs with temporal jitter of crossfade
     % and save the respective jitter in the trialList to make it accessible
@@ -587,12 +572,12 @@ for n = 1:length(subj.trials(:,1))
 
     % trigger: timestamp for onset/change & exp. condition (1-32)
     if flags.do_eeg 
-        IOPort('Write', TB, uint8(subj.trials(n,5)), 0);
+        IOPort('Write', TB, uint8(subj.trials(n,7)), 0);
         pause(0.01);
         IOPort('Write', TB, uint8(0), 0);
         pause(onsetChange-0.01); % wait until start of crossfade
 
-        IOPort('Write', TB, uint8(subj.trials(n,6)), 0);
+        IOPort('Write', TB, uint8(subj.trials(n,8)), 0);
         pause(0.01);
         IOPort('Write', TB, uint8(0), 0);
         pause(0.01); % kv.dur-onsetChange-0.02
