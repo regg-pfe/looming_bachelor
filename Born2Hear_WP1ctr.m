@@ -189,10 +189,6 @@ instructionA = [instructionA,...
   '\n',...
   'Antworten Sie so schnell wie m√∂glich!\n\n',...
   'Bitte richten Sie Ihren Blick w√§hrend der Ger√§uschwiedergabe stets auf den wei√üen Punkt in der Mitte des Bildschirms. \n'];
-if flags.do_lateResp
-    instructionA=[instructionA,...
-  'Antworten Sie erst, nachdem sich der Punkt blau gef√§rbt hat (nach Ende des zweiten Ger√§usches).\n'];
-end
 instructionA= [instructionA,...
    'Nach kurzen Bl√∂cken von je 3 Minuten haben Sie die M√∂glichkeit eine Pause einzulegen.\n\n'];
 
@@ -288,6 +284,8 @@ end
 
 % create trial table from vectors t1 to t5 (corresponding to 1 repetition!)
 trialList = [t1,t2,t3,t4,t5',t6',t7',t8'];
+
+stimTest = trialList;
 % repeat matrix 50 times (such that the list contains 100 trials
 % respectively for inverted & native conditions on the left and the right
 trialList = repmat(trialList,50,1); 
@@ -297,6 +295,8 @@ t9=repelem([1:kv.Fr],ceil(length(trialList)/kv.Fr));
 t9=t9(randperm(length(t9)))';
 trialList(:,9)=t9(1:length(trialList));
 
+stimTest(:,9)=t9(1:length(stimTest(:,1)));
+stimTest = stimTest(randperm(size(stimTest,1)),:);
 % randomize the trialList & then sort trials such that left/right trials
 % are blocked (whether left or right comes first is also randomized) + such
 % that inverted/native trials are blocked (inverted always precedes native to minimize bias)
@@ -317,6 +317,104 @@ subj.trials = sorted_dummy;
 % Set values
 subj.D = subj.trials(:,1); % 1st column: looming (-1) or receding (1)
 subj.pos = subj.trials(:,3); % speaker positions (37 left or 82 right)
+
+%% stimulus testing
+% sequence of stimuli to test noises & familiarize subjects with task
+if flags.do_familiarize
+    
+    pause(1)
+    % wait for space key
+    keyCode(spaceKey) = 0;
+    while keyCode(spaceKey) == 0
+        [secs, keyCode] = KbWait;
+    end
+    
+    pause(1.5)  % add a pause to ensure the pause is active before the sound 
+
+    % Fixation point
+    Screen('DrawDots',win, [x_center,y_center], 14, white, [], 2);
+    Screen('Flip',win);
+    pause(1)
+    
+    for n = 1:length(stimTest(:,1))
+        if stimTest(n,1) == -1
+                if stimTest(n,2) == -1
+                    c1 = 3;
+                    c2 = 2;
+                else
+                    c1 = 2;
+                    c2 = 3;
+                end
+            else
+                if stimTest(n,1) == -1
+                    c1 = 1;
+                    c2 = 3;
+                else 
+                    c1 = 3;
+                    c2 = 1;
+                end
+        end
+
+        pp=stimTest(n,3); % position of loudspeaker (37 left or 82 right)
+        ff=stimTest(n,9); % frequenz of stimulus - one of 12 different freqs -> 3rd dimension in stim.sig
+
+        % combine stimulus pairs with temporal jitter of crossfade
+        dt = kv.jitter*(rand-0.5);
+        subj.tempJ(n,1) = dt;
+        % time for onset second stimulus
+        onsetChange = kv.dur/2+dt-kv.xFadeDur/2;
+
+        [sigpair,nM2] = Born2Hear_crossfade(stim.sig{c1,pp,ff},stim.sig{c2,pp,ff},...
+        stim.fs,kv.dur,kv.dur/2+dt,kv.xFadeDur,'argimport',flags,kv);
+
+        % playback
+        if flags.do_eeg % with StimTrak
+            PsychPortAudio('FillBuffer', pahandle, [sigpair stimVec]');
+        else
+            PsychPortAudio('FillBuffer', pahandle, sigpair');
+        end
+        
+        tic;
+        PsychPortAudio('Start', pahandle, 1, 0, 1);
+        
+        if flags.do_beh
+         pause(onsetChange)
+        end
+
+        % Get response via keyboard 
+        keyCodeVal = 0;
+
+        while not(any(keyCodeVal==[closerKey,fartherKey]))
+        [tmp,keyCode] = KbWait([],2);
+        keyCodeVal = find(keyCode,1);
+        end
+        
+        respPress=toc;
+        
+         Screen('FillRect',win,black);
+         Screen('Flip',win);
+         % for responses during stimuliation, wait until end of stimulation
+         if respPress < (kv.dur-onsetChange)
+             pause(kv.dur-respPress-onsetChange)
+         end
+         pause(0.3)
+         Screen('DrawDots',win, [x_center,y_center], 14, white, [], 2);
+         Screen('Flip',win);
+         
+    end
+    
+    instruction2 = [...
+      'YAY - ‹bungsdurchg‰nge erfolgreich abgeschlossen! \n',...
+      'Haben Sie noch Fragen?\n',...
+      'Wenn nicht, dr¸cken Sie die Leertaste um das Experiment zu starten.\n'];
+    DrawFormattedText(win,instruction2,'center','center',white,120,0,0,1.5);
+    Screen('Flip',win);
+    
+     % Experimenter monitoring info
+    disp('Info given to listener:')
+    disp(instruction2)
+    
+end
 
 %% passive condition
 
@@ -411,35 +509,7 @@ if flags.do_eeg
             IOPort('Write', TB, uint8(0), 0);
             pause(0.01); % kv.dur-onsetChange-0.02
         end
-        
-        
-        if n == length(subj.trials(:,1))/2
-            pause(1.2)
-            % pause video
-            v.pause();
-            
-            infotext = [infotext,...
-           'PAUSE',...
-           '\n\n\n H‰lfte des Videos abgeschlossen. Bitte Leertaste Taste dr√ºcken um mit dem Video fortzufahren.'];
 
-            % Experimenter monitoring info
-            disp('Info given to listener:')
-            disp(infotext)
-            % force break
-            % pause(10)
-            keyCode(spaceKey) = 0;
-            while keyCode(spaceKey) == 0
-                [secs, keyCode] = KbWait;
-            end
-            % resume video
-            v.play();
-
-            % start trigger for new block
-            IOPort('Write', TB, uint8(trigVals.startBlock), 0);
-            pause(0.01);
-            IOPort('Write', TB, uint8(0), 0);
-            pause(0.01);
-        end
     end
     
     v.quit();
@@ -537,29 +607,29 @@ for n = 1:length(subj.trials(:,1))
     [sigpair,nM2] = Born2Hear_crossfade(stim.sig{c1,pp,ff},stim.sig{c2,pp,ff},...
     stim.fs,kv.dur,kv.dur/2+dt,kv.xFadeDur,'argimport',flags,kv);
 
-    % Plot spectral maps to check stimuli
-    if flags.do_debugMode
-      % Plot spectrograms
-      figSgram = figure;
-      subplot(2,2,1)
-      sgram(sigpair(:,1),kv.fs,'dynrange',60,'db')
-      title('Left')
-      subplot(2,2,2)
-      sgram(sigpair(:,2),kv.fs,'dynrange',60,'db')
-      title('Right')
-      subplot(2,2,3)
-      plot(sigpair(:,1))
-      xlim([1.4e4 4.3e4])
-      ylim([-0.1 0.1])
-      title('Left')
-      subplot(2,2,4)
-      plot(sigpair(:,2))
-      xlim([1.4e4 4.3e4])
-      ylim([-0.1 0.1])
-      title('Right')
-      % Display trial values
-      table(subj.trials(n,1:3),dt)
-    end
+%     % Plot spectral maps to check stimuli
+%     if flags.do_debugMode
+%       % Plot spectrograms
+%       figSgram = figure;
+%       subplot(2,2,1)
+%       sgram(sigpair(:,1),kv.fs,'dynrange',60,'db')
+%       title('Left')
+%       subplot(2,2,2)
+%       sgram(sigpair(:,2),kv.fs,'dynrange',60,'db')
+%       title('Right')
+%       subplot(2,2,3)
+%       plot(sigpair(:,1))
+%       xlim([1.4e4 4.3e4])
+%       ylim([-0.1 0.1])
+%       title('Left')
+%       subplot(2,2,4)
+%       plot(sigpair(:,2))
+%       xlim([1.4e4 4.3e4])
+%       ylim([-0.1 0.1])
+%       title('Right')
+%       % Display trial values
+%       table(subj.trials(n,1:3),dt)
+%     end
 
     % playback
     if flags.do_eeg % with StimTrak
@@ -583,19 +653,8 @@ for n = 1:length(subj.trials(:,1))
         pause(0.01); % kv.dur-onsetChange-0.02
     end
 
-
-    if flags.do_lateResp
-        if flags.do_eeg
-            pause(kv.dur-onsetChange-0.02) % pause only from crossfade trigger to offset
-        else
-            pause(kv.dur)
-        end
-        Screen('DrawDots',win, [x_center,y_center], 14, blue, [], 2);
-        Screen('Flip',win);
-    else
-        if flags.do_beh
-            pause(onsetChange)
-        end
+    if flags.do_beh
+        pause(onsetChange)
     end
 
     % Get response via keyboard 
@@ -643,31 +702,30 @@ for n = 1:length(subj.trials(:,1))
     end
 
 
-     if flags.do_lateResp
-         Screen('DrawDots',win, [x_center,y_center], 14, white, [], 2);
-         Screen('Flip',win);
-         pause(0.3)
-     else
-         Screen('FillRect',win,black);
-         Screen('Flip',win);
-         % for responses during stimuliation, wait until end of stimulation
-         if respPress < (kv.dur-onsetChange)
-             pause(kv.dur-respPress-onsetChange)
-         end
-         pause(0.3)
-         Screen('DrawDots',win, [x_center,y_center], 14, white, [], 2);
-         Screen('Flip',win);         
+     Screen('FillRect',win,black);
+     Screen('Flip',win);
+     % for responses during stimuliation, wait until end of stimulation
+     if respPress < (kv.dur-onsetChange)
+         pause(kv.dur-respPress-onsetChange)
      end
+     pause(0.3)
+     Screen('DrawDots',win, [x_center,y_center], 14, white, [], 2);
+     Screen('Flip',win);         
+
 
     gt = kv.jitter*(rand-0.5);
     subj.tempJ(n,2) = gt;
     pause(0.5 + gt) % -> 0.8 (0.3 from above + 0.5) +/- 50 ms
 
-    if flags.do_debugMode
-      close(figSgram)
-    end
+%     if flags.do_debugMode
+%       close(figSgram)
+%     end
+
+    % Intermediate score    
+    subj.pcorrect = 100* nansum(subj.hit(1:n)) / n;  
     
-    if mod(n,91) == 0 % make break
+    % break after half of trials
+    if n == length(subj.trials(:,1))/2
         
         %trigger for block end
         if flags.do_eeg
@@ -677,57 +735,59 @@ for n = 1:length(subj.trials(:,1))
           pause(0.01);
         end
    
-        % Intermediate score
-        subj.pcorrect = 100* nansum(subj.hit(1:n)) / n;
         % Save results
         save(savename,'subj')
         
-        % Display time course and intermediate score
+        % Display time course
         infotext = [...
             'PAUSE',...
-            '\n\n\n',num2str(n/2) ' von ' num2str(length(subj.trials(:,1))/2) ' Bl√∂cken abgeschlossen.'];
+            '\n\n\n H‰lfte geschafft!',...
+            '\n\n\n Leertaste Taste dr√ºcken um mit dem Experiment fortzufahren.',...
+            '\n\n ACHTUNG - Die Ger‰usche kommen jetzt von der anderen Seite.',...
+            'Noch immer ist die Aufgabe zu erkennen, ob die Ger‰usche sich auf',...
+            'dich zu (Pfeil UNTEN), oder von dir weg (Pfeil OBEN) bewegen.'];
+        
+        DrawFormattedText(win,infotext,.2*x_center,'center',white,120,0,0,1.5);
+        Screen('Flip',win);
+        
+        disp('Info given to listener:')
+        disp(infotext)
+        % wait for space key press of subject, then start trigger for new
+        % block
+        keyCode(spaceKey) = 0;
+        while keyCode(spaceKey) == 0
+            [~, keyCode] = KbWait;
+        end
+
+        if flags.do_eeg
+            IOPort('Write', TB, uint8(trigVals.startBlock), 0);
+            pause(0.01);
+            IOPort('Write', TB, uint8(0), 0);
+            pause(0.01);
+        end
+        
+        % Fixation point
+        Screen('DrawDots',win, [x_center,y_center], 14, white, [], 2);
+        Screen('Flip',win);
+        pause(1)
+            
+    elseif n == length(subj.trials(:,1))        
         % Inform listener that experiment is completed if all trials are
         % finished
-        if n == length(subj.trials(:,1))
-            infotext = [infotext,...
-            '\n\n\n Vielen Dank! Das Experiment ist abgeschlossen.'];
-            DrawFormattedText(win,[infotext],'center','center',white);
-            Screen('Flip',win);
-            WaitSecs(5);
-            Screen('CloseAll');  
-        % else continuation with experiment
-        else
-            infotext = [infotext,...
-            '\n\n\n Leertaste Taste dr√ºcken um mit dem Experiment fortzufahren.'];
-            DrawFormattedText(win,infotext,'center','center',white);
-            Screen('Flip',win);
-        end
+        infotext = [infotext,...
+        '\n\n\n Vielen Dank! Das Experiment ist abgeschlossen.'];
+        DrawFormattedText(win,[infotext],'center','center',white);
         
         % Experimenter monitoring info (incl % correct)
         disp('Info given to listener:')
         disp(infotext)
         disp(num2str(subj.pcorrect,'%3.2f'),'% richtige Antworten.')
-        % force break
-        % pause(10)
-        keyCode(spaceKey) = 0;
-        while keyCode(spaceKey) == 0
-            [~, keyCode] = KbWait;
-        end
         
-        % if experiment is not completed, start trigger for new block
-        if n ~= length(subj.trials(:,1))
-            if flags.do_eeg
-                IOPort('Write', TB, uint8(trigVals.startBlock), 0);
-                pause(0.01);
-                IOPort('Write', TB, uint8(0), 0);
-                pause(0.01);
-            end
-            % Fixation point
-            Screen('DrawDots',win, [x_center,y_center], 14, white, [], 2);
-            Screen('Flip',win);
-            pause(1)
-        end    
-    end
+        Screen('Flip',win);
+        WaitSecs(5);
+        Screen('CloseAll');  
+        
+    end 
 end
 
 
@@ -736,7 +796,11 @@ save(savename,'subj')
 
 % close PsychAudioPort and virtual  serial port
 PsychPortAudio('Close', pahandle);
+WaitSecs(3);
+Screen('CloseAll');
 
 if flags.do_eeg
     IOPort('Close', TB);
+end
+
 end
