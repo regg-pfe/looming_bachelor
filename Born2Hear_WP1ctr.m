@@ -63,8 +63,8 @@ KbName('UnifyKeyNames');
 
 spaceKey = KbName('Space');
 
-closerKey = KbName('UpArrow');
-fartherKey = KbName('DownArrow');
+closerKey = KbName('DownArrow'); % for looming stimuli
+fartherKey = KbName('UpArrow'); % for receding stimuli
 
 if flags.do_eeg
     trigVals = struct(...
@@ -190,7 +190,7 @@ instructionA = [instructionA,...
   'Antworten Sie so schnell wie möglich!\n\n',...
   'Bitte richten Sie Ihren Blick während der Geräuschwiedergabe stets auf den weißen Punkt in der Mitte des Bildschirms. \n'];
 instructionA= [instructionA,...
-   'Nach kurzen Blöcken von je 3 Minuten haben Sie die Möglichkeit eine Pause einzulegen.\n\n'];
+   'Nach der H�lfte des Experiments haben Sie die Möglichkeit eine Pause einzulegen.\n\n'];
 
 if flags.do_beh
     instructionA=[instructionA,...
@@ -315,7 +315,7 @@ end
 subj.trials = sorted_dummy;
 
 % Set values
-subj.D = subj.trials(:,1); % 1st column: looming (-1) or receding (1)
+subj.D = subj.trials(:,2); % 1st column: looming (-1) or receding (1)
 subj.pos = subj.trials(:,3); % speaker positions (37 left or 82 right)
 
 %% stimulus testing
@@ -339,11 +339,11 @@ if flags.do_familiarize
     for n = 1:length(stimTest(:,1))
         if stimTest(n,1) == -1
                 if stimTest(n,2) == -1
-                    c1 = 3;
-                    c2 = 2;
-                else
                     c1 = 2;
                     c2 = 3;
+                else
+                    c1 = 3;
+                    c2 = 2;
                 end
             else
                 if stimTest(n,1) == -1
@@ -455,16 +455,16 @@ if flags.do_eeg
     % stim crossover is always c1 -> c2
     % 1 -> 0 is looming native
     % 0 -> 1 is receding native
-    % 0 -> -1 is looming inverted
-    % -1 -> 0 is receding inverted
+    % -1 -> 0 is looming inverted
+    % 0 -> -1 is receding inverted
 
         if subj.trials(n,1) == -1
             if subj.trials(n,2) == -1
-                c1 = 3;
-                c2 = 2;
-            else
                 c1 = 2;
                 c2 = 3;
+            else
+                c1 = 3;
+                c2 = 2;
             end
         else
             if subj.trials(n,1) == -1
@@ -572,16 +572,16 @@ for n = 1:length(subj.trials(:,1))
     % stim crossover is always c1 -> c2
     % 1 -> 0 is looming native
     % 0 -> 1 is receding native
-    % 0 -> -1 is looming inverted
-    % -1 -> 0 is receding inverted
+    % -1 -> 0 is looming inverted
+    % 0 -> -1 is receding inverted
     
     if subj.trials(n,1) == -1
         if subj.trials(n,2) == -1
-            c1 = 3;
-            c2 = 2;
-        else
             c1 = 2;
             c2 = 3;
+        else
+            c1 = 3;
+            c2 = 2;
         end
     else
         if subj.trials(n,2) == -1
@@ -739,7 +739,7 @@ for n = 1:length(subj.trials(:,1))
         save(savename,'subj')
         
         % Display time course
-        infotext = [...
+        infotext1 = [...
             'PAUSE',...
             '\n\n\n H�lfte geschafft!',...
             '\n\n\n Leertaste Taste drücken um mit dem Experiment fortzufahren.',...
@@ -747,11 +747,11 @@ for n = 1:length(subj.trials(:,1))
             'Noch immer ist die Aufgabe zu erkennen, ob die Ger�usche sich auf',...
             'dich zu (Pfeil UNTEN), oder von dir weg (Pfeil OBEN) bewegen.'];
         
-        DrawFormattedText(win,infotext,.2*x_center,'center',white,120,0,0,1.5);
+        DrawFormattedText(win,infotext1,.2*x_center,'center',white,120,0,0,1.5);
         Screen('Flip',win);
         
         disp('Info given to listener:')
-        disp(infotext)
+        disp(infotext1)
         % wait for space key press of subject, then start trigger for new
         % block
         keyCode(spaceKey) = 0;
@@ -774,14 +774,14 @@ for n = 1:length(subj.trials(:,1))
     elseif n == length(subj.trials(:,1))        
         % Inform listener that experiment is completed if all trials are
         % finished
-        infotext = [infotext,...
+        infotext2 = [...
         '\n\n\n Vielen Dank! Das Experiment ist abgeschlossen.'];
-        DrawFormattedText(win,[infotext],'center','center',white);
+        DrawFormattedText(win,[infotext2],'center','center',white);
         
         % Experimenter monitoring info (incl % correct)
         disp('Info given to listener:')
-        disp(infotext)
-        disp(num2str(subj.pcorrect,'%3.2f'),'% richtige Antworten.')
+        disp(infotext2)
+        disp([num2str(subj.pcorrect,'%3.2f'),'% richtige Antworten.'])
         
         Screen('Flip',win);
         WaitSecs(5);
