@@ -5,7 +5,7 @@ function Born2Hear_WP1ctr(ID,varargin)
 % spectral profile: native(1) or inverted (-1); col 1
 % Direction (D): looming (-1) or receding (1); col 2
 %
-% speaker position: 37 left or 82 right; col 3
+% speaker position: 
 % lateralization of stimulus: left (1) or right (-1); col 4
 % trigger value onset passive; col 5
 % trigger value change passive; col 6
@@ -17,7 +17,7 @@ function Born2Hear_WP1ctr(ID,varargin)
 % hit: correct response (1) or wrong response (0)
 
 %% start deleting everything
-saveFileNamePrefix = 'Exp1';
+saveFileNamePrefix = 'Exp1_ctr';
 
 %% Experimental variables
 definput = arg_Born2Hear;
@@ -33,11 +33,6 @@ definput = arg_Born2Hear;
 subj.ID = ID;
 
 %% Save path
-savename = fullfile('data',[saveFileNamePrefix '_' subj.ID]);
-
-if not(exist('./data','dir'))
-  mkdir('data')
-end
 
 if flags.do_laptop
     savename = fullfile('data',[saveFileNamePrefix '_' subj.ID]);
@@ -50,7 +45,7 @@ else
     s = Subjects_Get;
     match = find((reshape(strcmp({s.ID}, ID), size(s)))==1);
     name = s(match).name;
-    savepath = fullfile('\\W07kfs4\eap\Resources\Experimental_Data\Main Experiments\NH',name,'Born2Hear\WP1_ctr');
+    savepath = fullfile('\\W07kfs4\eap\Resources\Experimental_Data\Main Experiments\NH',name,'Born2Hear\WP2');
     
     if not(exist(savepath))
       mkdir(savepath)
@@ -63,8 +58,8 @@ KbName('UnifyKeyNames');
 
 spaceKey = KbName('Space');
 
-closerKey = KbName('DownArrow'); % for looming stimuli
-fartherKey = KbName('UpArrow'); % for receding stimuli
+closerKey = KbName('rightArrow'); % for looming stimuli
+fartherKey = KbName('leftArrow'); % for receding stimuli
 
 if flags.do_eeg
     trigVals = struct(...
@@ -106,7 +101,7 @@ RandStream.setGlobalStream(rs);
 %% Initialize virtual serial port for trigger
 
 if flags.do_eeg
-    TB = IOPort('OpenSerialPort', 'COM3'); % replace ? with number of COM port
+    TB = IOPort('OpenSerialPort', 'COM3');
     % Read data from the TriggerBox
     Available = IOPort('BytesAvailable', TB);
     if(Available > 0)
@@ -169,7 +164,7 @@ if flags.do_eeg
        'Herzlich Willkommen zum Experiment!\n\n',...
        'Sie werden nun für ca. 15 min einen Film mit Untertitel ohne Tonspur sehen. Ihre Aufgabe ist es, sich NUR auf den Film zu konzentrieren, und die Geräusche zu ignorieren. ',...
        'Am Ende werden Ihnen Fragen zum Film gestellt.\n\n',...
-       'Bitte versuchen Sie, sich während des Films möglichst wenig zu bewegen!\nNach je 8 min pausiert der Film und Sie können eine Pause einlegen.\n\n',...
+       'Bitte versuchen Sie, sich während des Films möglichst wenig zu bewegen!\nNach 8 min pausiert der Film und Sie können eine Pause einlegen.\n\n',...
        'Sollten die Geräusche unangenehm laut sein, bitte sofort der Versuchsleitung Bescheid geben.\n\n',...
        'Haben Sie noch Fragen?\n\n',...
        'Zum Starten die Leertaste drücken.'];
@@ -182,8 +177,8 @@ instructionA = [...
   'Versuchen Sie andere Unterschiede wie räumliche Höhe, Intensität oder Tonhöhe zu ignorieren. \n',...
   '\n',...
   'Ihre Aufgabe während des Experiments ist es...\n',...
-  '   den unteren Pfeil zu drücken, wenn das ZWEITE Geräusch NÄHER an ihrem Kopf erscheint als das erste \n',...
-  '   den oberen Pfeil zu drücken, wenn das ZWEITE Geräusch ENTFERNTER von ihrem Kopf erscheint als das erste \n'];
+  '   den rechten Pfeil zu drücken, wenn das ZWEITE Geräusch NÄHER an ihrem Kopf erscheint als das erste \n',...
+  '   den linken Pfeil zu drücken, wenn das ZWEITE Geräusch ENTFERNTER von ihrem Kopf erscheint als das erste \n'];
 
 instructionA = [instructionA,...
   '\n',...
@@ -216,15 +211,15 @@ Screen('Flip',win);
 %% load stimuli and positions
 
 if flags.do_laptop
-    load(fullfile('data',['stimuli_' ID]));
+    load(fullfile('data',['stimuliC_lLR_' ID]));
 else
-    load(fullfile(savepath,['stimuli_' ID]));
+    load(fullfile(savepath,['stimuliC_lLR_' ID]));
 end
 
 %% Create trial list
 % t1 : 4x native (1) and 4x inverted (-1) 
 % t2 : 4x looming (-1) and 4x receding (1)
-% t3 : 2 LASpos (left 37 & right 82) 4 times (once for each direction & each contrast
+% t3 : LAS pos (in this case all stimuli are presented form the left)
 % condition -> reference to column in stim.sig
 % looming/receding, native/inverted and LASpos are cross-referenced such
 % that each stimulus is played once from every position 
@@ -239,7 +234,8 @@ end
 
 t1=repelem([-1,1],4)'; 
 t2=repelem([-1,1,-1,1],2)';
-t3=repmat([37,82],1,4)';
+t3=repmat(2,1,4)'; % only left position (LASpos 82)
+% t3=repmat([37,82],1,4)';
 t4=repmat([1,-1],1,4)';
 
 % trigger for passive onset t5/change t6 and active onset t7/ change t8
@@ -270,16 +266,16 @@ for n = 1:length(t1)
     end
 end
 
-% calculation of different trigger for left/right
-% for stimulus right: add 8
-for n = 1:length(t4)
-    if t4(n) == -1
-        t5(n)=t5(n)+8;
-        t6(n)=t6(n)+8;
-        t7(n)=t7(n)+8;
-        t8(n)=t8(n)+8;
-    end
-end
+% % calculation of different trigger for left/right
+% % for stimulus right: add 8
+% for n = 1:length(t4)
+%     if t4(n) == -1
+%         t5(n)=t5(n)+8;
+%         t6(n)=t6(n)+8;
+%         t7(n)=t7(n)+8;
+%         t8(n)=t8(n)+8;
+%     end
+% end
 
 
 % create trial table from vectors t1 to t5 (corresponding to 1 repetition!)
@@ -316,7 +312,7 @@ subj.trials = sorted_dummy;
 
 % Set values
 subj.D = subj.trials(:,2); % 1st column: looming (-1) or receding (1)
-subj.pos = subj.trials(:,3); % speaker positions (37 left or 82 right)
+subj.pos = subj.trials(:,3); % speaker positions (37 or 82)
 
 %% stimulus testing
 % sequence of stimuli to test noises & familiarize subjects with task
@@ -355,7 +351,7 @@ if flags.do_familiarize
                 end
         end
 
-        pp=stimTest(n,3); % position of loudspeaker (37 left or 82 right)
+        pp=stimTest(n,3); % position of loudspeaker (37 or 82)
         ff=stimTest(n,9); % frequenz of stimulus - one of 12 different freqs -> 3rd dimension in stim.sig
 
         % combine stimulus pairs with temporal jitter of crossfade
@@ -476,7 +472,7 @@ if flags.do_eeg
             end
         end
 
-        pp=subj.trials(n,3); % position of loudspeaker (37 left or 82 right)
+        pp=subj.trials(n,3); % position of loudspeaker (37 or 82)
         ff=subj.trials(n,9); % frequenz of stimulus - one of 12 different freqs -> 3rd dimension in stim.sig
 
         % combine stimulus pairs with temporal jitter of crossfade
@@ -593,7 +589,7 @@ for n = 1:length(subj.trials(:,1))
         end
     end
     
-    pp=subj.trials(n,3); % position of loudspeaker (37 left or 82 right)
+    pp=subj.trials(n,3); % position of loudspeaker (37 or 82)
     ff=subj.trials(n,9); % frequenz of stimulus - one of 12 different freqs -> 3rd dimension in stim.sig
 
     % combine stimulus pairs with temporal jitter of crossfade
@@ -742,10 +738,7 @@ for n = 1:length(subj.trials(:,1))
         infotext1 = [...
             'PAUSE',...
             '\n\n\n H�lfte geschafft!',...
-            '\n\n\n Leertaste Taste drücken um mit dem Experiment fortzufahren.',...
-            '\n\n ACHTUNG - Die Ger�usche kommen jetzt von der anderen Seite.',...
-            'Noch immer ist die Aufgabe zu erkennen, ob die Ger�usche sich auf',...
-            'dich zu (Pfeil UNTEN), oder von dir weg (Pfeil OBEN) bewegen.'];
+            '\n\n\n Leertaste Taste drücken um mit dem Experiment fortzufahren.'];
         
         DrawFormattedText(win,infotext1,.2*x_center,'center',white,120,0,0,1.5);
         Screen('Flip',win);
