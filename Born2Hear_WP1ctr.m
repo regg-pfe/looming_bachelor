@@ -5,7 +5,7 @@ function Born2Hear_WP1ctr(ID,varargin)
 % spectral profile: native(1) or inverted (-1); col 1
 % Direction (D): looming (-1) or receding (1); col 2
 %
-% speaker position: 
+% speaker position: LAS 23, 9, 74, 54
 % lateralization of stimulus: left (1) or right (-1); col 4
 % trigger value onset passive; col 5
 % trigger value change passive; col 6
@@ -219,67 +219,66 @@ end
 %% Create trial list
 % t1 : 4x native (1) and 4x inverted (-1) 
 % t2 : 4x looming (-1) and 4x receding (1)
-% t3 : LAS pos (in this case all stimuli are presented form the left)
+% t3 : LAS pos -> 4 pos left (23, 9, 74, 54)
 % condition -> reference to column in stim.sig
 % looming/receding, native/inverted and LASpos are cross-referenced such
 % that each stimulus is played once from every position 
 
 % t4 : lateralization of each speaker position (left 1, right -1)
-% t5 : trigger at onset passive
-% t6 : trigger at change passive
-% t7 : trigger at onset active
-% t8 : tigger at change active
-% t9 : frequency of stim (12 different freqs) -> reference to 3rd dimension
+% t5 : trigger at onset active
+% t6 : trigger at change active
+% t7 : frequency of stim (12 different freqs) -> reference to 3rd dimension
 % in stim.sig
 
 t1=repelem([-1,1],4)'; 
 t2=repelem([-1,1,-1,1],2)';
-t3=repmat(2,1,4)'; % only left position (LASpos 82)
-% t3=repmat([37,82],1,4)';
+t3=repmat([23,9,74,54],1,2)'; % LAS pos
 t4=repmat([1,-1],1,4)';
 
-% trigger for passive onset t5/change t6 and active onset t7/ change t8
+% trigger for active onset t5 and active change t6
 % calculation of a different trigger depending on whether the signal is
 % native/inverted ; looming/receding
 % trigger for LEFT!
 for n = 1:length(t1)
     if t1(n) == -1 && t2(n) == -1
-        t5(n) = 132;
-        t6(n) = 164;
-        t7(n) = 148;
-        t8(n) = 189;
+        t5(n) = 142;
+        t6(n) = 174;
     elseif t1(n) == -1 && t2(n) == 1
-        t5(n)= 133;
-        t6(n) = 165;
-        t7(n) = 149;
-        t8(n) = 181;
+        t5(n)= 143;
+        t6(n) = 175;
     elseif t1(n) == 1 && t2(n) == -1
-        t5(n)= 129;
-        t6(n) = 161;
-        t7(n) = 145;
-        t8(n) = 177;
+        t5(n)= 141;
+        t6(n) = 173;
     elseif t1(n) == 1 && t2(n) == 1
-        t5(n)= 128;
-        t6(n) = 160;
-        t7(n) = 144;
-        t8(n) = 176;
+        t5(n)= 140;
+        t6(n) = 172;
     end
 end
 
-% % calculation of different trigger for left/right
-% % for stimulus right: add 8
-% for n = 1:length(t4)
-%     if t4(n) == -1
-%         t5(n)=t5(n)+8;
-%         t6(n)=t6(n)+8;
-%         t7(n)=t7(n)+8;
-%         t8(n)=t8(n)+8;
-%     end
-% end
+% calculation of different trigger for different positions
+% 9: Front-Up = +4
+% 23: Front-Down = +8 
+% 54: Back-Up = +12 
+% 74: Front-Down = +16 
+for n = 1:length(t3)
+    if t3(n) == 9
+        t5(n)=t5(n)+4;
+        t6(n)=t6(n)+4;
+    elseif t3(n) == 23
+        t5(n)=t5(n)+8;
+        t6(n)=t6(n)+8;
+    elseif t3(n) == 23
+        t5(n)=t5(n)+12;
+        t6(n)=t6(n)+12;
+    elseif t3(n) == 23
+        t5(n)=t5(n)+16;
+        t6(n)=t6(n)+16;
+    end
+end
 
 
 % create trial table from vectors t1 to t5 (corresponding to 1 repetition!)
-trialList = [t1,t2,t3,t4,t5',t6',t7',t8'];
+trialList = [t1,t2,t3,t4,t5',t6'];
 
 stimTest = trialList;
 % repeat matrix 50 times (such that the list contains 100 trials
@@ -287,25 +286,34 @@ stimTest = trialList;
 trialList = repmat(trialList,50,1); 
 
 % frequencies
-t9=repelem([1:kv.Fr],ceil(length(trialList)/kv.Fr));
-t9=t9(randperm(length(t9)))';
-trialList(:,9)=t9(1:length(trialList));
+t7=repelem([1:kv.Fr],ceil(length(trialList)/kv.Fr));
+t7=t7(randperm(length(t7)))';
+trialList(:,7)=t7(1:length(trialList));
 
-stimTest(:,9)=t9(1:length(stimTest(:,1)));
+stimTest(:,7)=t7(1:length(stimTest(:,1)));
 stimTest = stimTest(randperm(size(stimTest,1)),:);
 % randomize the trialList & then sort trials such that left/right trials
 % are blocked (whether left or right comes first is also randomized) + such
 % that inverted/native trials are blocked (inverted always precedes native to minimize bias)
 
 randomized_dummy = trialList(randperm(size(trialList, 1)), :);
-contrast_sorted = sortrows(randomized_dummy, 1);
+
 
 lr = randi([1,2]);
 if lr == 1
-    sorted_dummy = sortrows(contrast_sorted, 3, {'ascend'});
+    sorted_dummy = sortrows(randomized_dummy, 3, {'ascend'});
 else
-    sorted_dummy = sortrows(contrast_sorted, 3, {'descend'});
+    sorted_dummy = sortrows(randomized_dummy, 3, {'descend'});
 end
+
+contrast_sorted = sortrows(randomized_dummy, 1);
+
+
+% contrast_sorted(1:100,:) = sortrows(contrast_sorted(1:100,:),3);
+% contrast_sorted(100:200,:) = sortrows(contrast_sorted(100:200,:),3,{'ascend'});
+% contrast_sorted(200:300,:) = sortrows(contrast_sorted(200:300,:),3,{'ascend'});
+% contrast_sorted(300:400,:) = sortrows(contrast_sorted(300:400,:),3,{'ascend'});
+
 
 % the final trial list is a randomization of the trialList table
 subj.trials = sorted_dummy;
